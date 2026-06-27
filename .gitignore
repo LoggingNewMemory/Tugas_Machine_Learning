@@ -1,0 +1,8 @@
+.venv/
+qwen_venv/
+Qwen2.5-3B-Instruct/
+*.csv
+*.log
+__pycache__/
+.notebook_code.py
+.ipynb_checkpoints/

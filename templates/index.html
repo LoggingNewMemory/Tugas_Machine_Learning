@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --surface-color: rgba(31, 40, 51, 0.6);
+            --border-color: rgba(102, 252, 241, 0.2);
+            --primary-glow: #66fcf1;
+            --secondary-glow: #45a29e;
+            --text-main: #c5c6c7;
+            --text-heading: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(102, 252, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(69, 162, 158, 0.15) 0%, transparent 50%);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .glass-panel {
+            background: var(--surface-color);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(102, 252, 241, 0.15);
+        }
+
+        h1 {
+            color: var(--text-heading);
+            font-size: 3rem;
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #fff 0%, var(--primary-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        p.subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            color: var(--text-main);
+            opacity: 0.8;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        input[type="url"] {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input[type="url"]:focus {
+            outline: none;
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 15px rgba(102, 252, 241, 0.3);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--secondary-glow) 0%, var(--primary-glow) 100%);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 0 2rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(102, 252, 241, 0.4);
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary-glow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-glow);
+        }
+
+        .result-card h3 {
+            margin-top: 0;
+            color: white;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ml-tag {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .tag-safe {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+
+        .tag-danger {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .llm-content {
+            line-height: 1.6;
+            color: var(--text-main);
+            font-size: 1.05rem;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="glass-panel">
+        <h1>PhishGuard AI</h1>
+        <p class="subtitle">Random Forest Prediction & LLM Threat Intelligence</p>
+
+        <div class="input-group">
+            <input type="url" id="urlInput" placeholder="Enter suspicious URL (e.g., https://example.com)" required autocomplete="off">
+            <button id="analyzeBtn">Analyze</button>
+        </div>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <div>Analyzing threat vectors using Random Forest & Qwen...</div>
+        </div>
+
+        <div class="results" id="results">
+            <div class="result-card">
+                <h3>Random Forest Prediction</h3>
+                <div id="mlResult" class="ml-tag"></div>
+            </div>
+            <div class="result-card">
+                <h3>Qwen 2.5 Security Expert Analysis</h3>
+                <div class="llm-content" id="llmResult"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('analyzeBtn').addEventListener('click', async () => {
+        const url = document.getElementById('urlInput').value.trim();
+        if(!url) return alert('Please enter a URL');
+
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+
+        try {
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            const data = await response.json();
+
+            const mlDiv = document.getElementById('mlResult');
+            mlDiv.textContent = data.ml_prediction;
+            mlDiv.className = 'ml-tag ' + (data.ml_prediction.includes('Phishing') ? 'tag-danger' : 'tag-safe');
+
+            document.getElementById('llmResult').textContent = data.llm_analysis;
+
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+        } catch (e) {
+            alert('Analysis failed. Make sure the backend is running.');
+            document.getElementById('loader').style.display = 'none';
+        }
+    });
+
+    document.getElementById('urlInput').addEventListener('keypress', function(e) {
+        if(e.key === 'Enter') document.getElementById('analyzeBtn').click();
+    });
+</script>
+
+</body>
+</html>
