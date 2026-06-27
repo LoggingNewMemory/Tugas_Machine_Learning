@@ -4,6 +4,5 @@ numpy
 scipy
 scikit-learn
 joblib
-openai
 requests
-vllm
+huggingface_hub

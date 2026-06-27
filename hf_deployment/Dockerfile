@@ -1,13 +1,8 @@
-# Use an official lightweight Python + CUDA image for vLLM
-FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+# Use an official lightweight Python image
+FROM python:3.10-slim
 
 # Set up environment
-ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
-
-# Install Python and dependencies
-RUN apt-get update && apt-get install -y python3-pip python3-dev curl && rm -rf /var/lib/apt/lists/*
-RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Create working directory
 WORKDIR /app
